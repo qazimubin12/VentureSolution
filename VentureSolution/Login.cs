@@ -34,7 +34,7 @@ namespace VentureSolution
                 bool found = false;
                 object count = 0;
                 MainClass.con.Open();
-                SqlCommand cmd = new SqlCommand("select * from UsersTable where Username = @Username and Password = @Password ", MainClass.con);
+                SqlCommand cmd = new SqlCommand("select * from User where Username = @Username and Password = @Password ", MainClass.con);
                 cmd.Parameters.AddWithValue("@Username", txtUsername.Text);
                 cmd.Parameters.AddWithValue("@Password", txtPassword.Text);
                 dr = cmd.ExecuteReader();
@@ -43,7 +43,6 @@ namespace VentureSolution
                 {
                     found = true;
                     User_NAME = dr["Name"].ToString();
-                    Role = dr["Role"].ToString();
                 }
                 else
                 {
@@ -54,47 +53,12 @@ namespace VentureSolution
                 }
                 dr.Close();
                 MainClass.con.Close();
-                if (found == true)
-                {
-                    if (Role.ToString() == "Admin")
-                    {
 
-                        try
-                        {
-                            MainClass.con.Open();
-                            SqlCommand cmd1 = new SqlCommand("select * from ModeSwitching", MainClass.con);
-                            count = cmd1.ExecuteScalar();
-                            MainClass.con.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            MainClass.con.Close();
-                            MessageBox.Show(ex.Message);
-                        }
+                MessageBox.Show("Welcome " + User_NAME);
+                HomeScreen das = new HomeScreen();
+                this.Dispose();
+                das.Show();
 
-                        if (count == null)
-                        {
-                            try
-                            {
-                                MainClass.con.Open();
-                                SqlCommand cmd1 = new SqlCommand("insert into ModeSwitching (InventoryMode)  values ('"+1+"')", MainClass.con);
-                                cmd1.ExecuteNonQuery();
-                                MainClass.con.Close();
-
-                            }
-                            catch (Exception ex)
-                            {
-                                MainClass.con.Close();
-                                MessageBox.Show(ex.Message);
-                            }
-                        }
-
-                        MessageBox.Show("Welcome " + User_NAME);
-                        HomeScreen das = new HomeScreen();
-                        das.Show();
-                    }
-                   
-                }
             }
             catch (Exception ex)
             {
@@ -130,7 +94,32 @@ namespace VentureSolution
 
         private void Login_Load(object sender, EventArgs e)
         {
+            try
+            {
+                SqlCommand cmd = null;
+                MainClass.con.Open();
+                 cmd = new SqlCommand("select count(*) from User", MainClass.con);
+                int Count = int.Parse(cmd.ExecuteScalar().ToString());
+                if(Count == 0)
+                {
+                    cmd = new SqlCommand("insert into User (Username,Password,Company,Position,Name,Image) values (@Username,@Password,@Company,@Position,@Name,@Image)", MainClass.con);
+                    cmd.Parameters.AddWithValue("@Username", "Admin");
+                    cmd.Parameters.AddWithValue("@Password", "admin123");
+                    cmd.Parameters.AddWithValue("@Company", "DEMO");
+                    cmd.Parameters.AddWithValue("@Position", "CEO");
+                    cmd.Parameters.AddWithValue("@Name", "Demo Name");
+                    cmd.Parameters.AddWithValue("@Image", null);
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Demo User Added you can change into settings, Credentials are: Username: Admin and Password: admin123");
 
+                }
+                MainClass.con.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
