@@ -34,7 +34,7 @@ namespace VentureSolution
                 bool found = false;
                 object count = 0;
                 MainClass.con.Open();
-                SqlCommand cmd = new SqlCommand("select * from User where Username = @Username and Password = @Password ", MainClass.con);
+                SqlCommand cmd = new SqlCommand("SELECT * FROM [User] WHERE Username = @Username AND Password = @Password", MainClass.con);
                 cmd.Parameters.AddWithValue("@Username", txtUsername.Text);
                 cmd.Parameters.AddWithValue("@Password", txtPassword.Text);
                 dr = cmd.ExecuteReader();
@@ -43,6 +43,10 @@ namespace VentureSolution
                 {
                     found = true;
                     User_NAME = dr["Name"].ToString();
+                    MessageBox.Show("Welcome " + User_NAME);
+                    HomeScreen das = new HomeScreen();
+                    this.Hide();
+                    das.Show();
                 }
                 else
                 {
@@ -54,10 +58,7 @@ namespace VentureSolution
                 dr.Close();
                 MainClass.con.Close();
 
-                MessageBox.Show("Welcome " + User_NAME);
-                HomeScreen das = new HomeScreen();
-                this.Dispose();
-                das.Show();
+             
 
             }
             catch (Exception ex)
@@ -98,17 +99,17 @@ namespace VentureSolution
             {
                 SqlCommand cmd = null;
                 MainClass.con.Open();
-                 cmd = new SqlCommand("select count(*) from User", MainClass.con);
+                 cmd = new SqlCommand("select count(*) from [User]", MainClass.con);
                 int Count = int.Parse(cmd.ExecuteScalar().ToString());
                 if(Count == 0)
                 {
-                    cmd = new SqlCommand("insert into User (Username,Password,Company,Position,Name,Image) values (@Username,@Password,@Company,@Position,@Name,@Image)", MainClass.con);
+                    cmd = new SqlCommand("insert into [User] (ID,Username,Password,Company,Position,Name) values (@ID,@Username,@Password,@Company,@Position,@Name)", MainClass.con);
+                    cmd.Parameters.AddWithValue("@ID", 1);
                     cmd.Parameters.AddWithValue("@Username", "Admin");
                     cmd.Parameters.AddWithValue("@Password", "admin123");
                     cmd.Parameters.AddWithValue("@Company", "DEMO");
                     cmd.Parameters.AddWithValue("@Position", "CEO");
                     cmd.Parameters.AddWithValue("@Name", "Demo Name");
-                    cmd.Parameters.AddWithValue("@Image", null);
                     cmd.ExecuteNonQuery();
                     MessageBox.Show("Demo User Added you can change into settings, Credentials are: Username: Admin and Password: admin123");
 
